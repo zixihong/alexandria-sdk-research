@@ -1,45 +1,44 @@
-import KeybindManager from './keybinds';
+import KeybindManager from './types/keybinds';
+import Config from './types/config';
+import AIContext from './types/aicontext';
+import AuthorCommunicator from './types/author-communicator';
+import AnalyticsService from './types/analytics-service';
+import AIPopup from './types/aipopup';
 
-interface Config {
-  aiApiKey: string;
-  analyticsEndpoint: string;
-}
-
-export default class ResearchAssistant {
-  private config: Config;
-  private keybindManager: KeybindManager;
-  private authorCommunicator: AuthorCommunicator;
-  private analyticsService: AnalyticsService;
+export default class AlexandriaResearch {
+  #config: Config;
+  #keybindManager: KeybindManager;
+  #authorCommunicator: AuthorCommunicator;
+  #analyticsService: AnalyticsService;
 
   constructor(config: Partial<Config> = {}) {
-    this.config = {
+    this.#config = {
       aiApiKey: '',
       analyticsEndpoint: '',
       ...config
     };
     
-    this.keybindManager = new KeybindManager();
-    this.authorCommunicator = new AuthorCommunicator();
-    this.analyticsService = new AnalyticsService(this.config.analyticsEndpoint);
-    
-    this.initializeKeybinds();
-    this.scanForAuthorEmails();
+    this.#keybindManager = new KeybindManager();
+    this.#authorCommunicator = new AuthorCommunicator();
+    this.#analyticsService = new AnalyticsService(this.#config.analyticsEndpoint);
+    this.#initializeKeybinds();
   }
 
-  private initializeKeybinds(): void {
-    this.keybindManager.register('shift+a', (e: KeyboardEvent) => {
+  #initializeKeybinds(): void {
+    this.#keybindManager.register('shift+a', (e: KeyboardEvent) => {
       const selection = window.getSelection()!.toString();
-      const context = this.getPageContext();
-      this.showAIPopup(selection, context);
+      const context = this.#getPageContext();
+      this.#showAIPopup(selection, context);
     });
     
-    this.keybindManager.register('shift+e', (e: KeyboardEvent) => {
+    this.#keybindManager.register('shift+e', (e: KeyboardEvent) => {
       const highlightedText = window.getSelection()!.toString();
-      this.authorCommunicator.showEmailComposer(highlightedText);
+      this.#authorCommunicator.showEmailComposer(highlightedText);
     });
   }
 
-  private getPageContext(): AIContext {
+  
+  #getPageContext(): AIContext {
     return {
       title: document.title,
       abstract: document.querySelector('.abstract')?.textContent || '',
@@ -50,14 +49,10 @@ export default class ResearchAssistant {
     };
   }
 
-  private showAIPopup(selection: string, context: AIContext): void {
+  #showAIPopup(selection: string, context: AIContext): void {
     const popup = new AIPopup(selection, context);
     document.body.appendChild(popup.render());
   }
 
-  private scanForAuthorEmails(): void {
-    const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-    const emails = Array.from(document.body.textContent?.matchAll(emailPattern) || []);
-    this.authorCommunicator.storeEmails(emails);
-  }
+
 } 

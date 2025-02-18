@@ -1,25 +1,11 @@
-interface AIContext {
-  title: string;
-  abstract: string;
-  sections: Array<{
-    heading: string;
-    content: string;
-  }>;
-}
-
-interface AIResponse {
-  choices: Array<{
-    message: {
-      content: string;
-    };
-  }>;
-}
+// change the API
+import AIContext from './types/aicontext';
 
 export class AIService {
   constructor(private apiKey: string) {}
 
-  async generateAnnotation(context: AIContext, selection: string): Promise<AIResponse> {
-    const prompt = this.createPrompt(context, selection);
+  async generateAnnotation(context: AIContext, selection: string): Promise<string> {
+    const prompt = this.#createPrompt(context, selection);
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -34,11 +20,12 @@ export class AIService {
         }]
       })
     });
-    return response.json();
+    const json = await response.json();
+    return json.choices[0].message.content;
   }
 
-  private createPrompt(context: AIContext, selection: string): string {
-    return `As a research assistant, explain this highlighted text in context:
+  #createPrompt(context: AIContext, selection: string): string {
+    return `explain this highlighted text in context:
     
     Article Title: ${context.title}
     Abstract: ${context.abstract}
