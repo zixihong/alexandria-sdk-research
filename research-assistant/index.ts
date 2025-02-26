@@ -19,6 +19,7 @@ export default class AlexandriaResearch {
   constructor(config: Partial<Config> = {}) {
     this.#config = {
       aiApiKey: '',
+      maxTokens: 500,
       ...config
     };
     
@@ -126,10 +127,11 @@ export default class AlexandriaResearch {
       ],
       "stream": false,
       "function_call": "identify_difficult_words",
+      "max_tokens": this.#config.maxTokens || 500
     };
     const response = await llama.run(apiRequestJson);
     const data = await response.json();
-    return data.choices[0].message; // Adjust based on the actual response structure
+    return data.choices[0].message; // adjust based on the actual response structure
   }
 
 

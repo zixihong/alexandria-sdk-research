@@ -18,7 +18,10 @@ interface AnalyticsData {
 
 
 export default class AnalyticsService implements AnalyticsService {
-  constructor(private endpoint: string) {
+  #config: { maxTokens?: number };
+  
+  constructor(private endpoint: string, config: { maxTokens?: number } = { maxTokens: 1000 }) {
+    this.#config = config;
     this.#initHeatmapTracking();
   }
 
@@ -153,6 +156,7 @@ export default class AnalyticsService implements AnalyticsService {
       ],
       "stream": true,
       "function_call": "get_response",
+      "max_tokens": this.#config.maxTokens || 1000
     };
 
     const response = await llama.run(apiRequestJson);

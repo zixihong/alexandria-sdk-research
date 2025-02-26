@@ -1,4 +1,3 @@
-// change the API
 import AIContext from './types/aicontext';
 import LlamaAI from 'llamaai';
 
@@ -9,7 +8,11 @@ if (!process.env.API_KEY) {
 const llama = new LlamaAI(apiToken);
 
 export class AIService {
-  constructor(private apiKey: string) {}
+  #config: { maxTokens?: number };
+  
+  constructor(private apiKey: string, config: { maxTokens?: number } = {}) {
+    this.#config = config;
+  }
 
   async #generateAnnotation(context: AIContext, selection: string): Promise<string> {
     const apiRequestJson = {
@@ -70,6 +73,7 @@ export class AIService {
       ],
       "stream": false,
       "function_call": "generate_annotation",
+      "max_tokens": this.#config.maxTokens || 1000
     };
     const response = await llama.run(apiRequestJson);
     const data = await response.json();
