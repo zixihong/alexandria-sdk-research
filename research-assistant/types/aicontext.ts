@@ -5,4 +5,5 @@ export default interface AIContext {
         heading: string;
         content: string;
     }>;
+    context: string;
 }
