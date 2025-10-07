@@ -1,6 +1,6 @@
 ## Alexandria Research Assistant
 
-AI-powered in-page research assistant for the browser. It highlights difficult words with definitions, annotates selected text in context, and includes a minimal analytics tracker and a chatbot.
+SDK and API for AI-powered in-page research assistant for the browser. It highlights difficult words with definitions, annotates selected text in context, and includes a minimal analytics tracker and a chatbot.
 
 ### Features
 - **Annotate selection**: Press Shift+A to get context-aware explanations for highlighted text.
